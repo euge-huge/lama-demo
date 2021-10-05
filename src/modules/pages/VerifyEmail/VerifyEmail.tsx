@@ -1,20 +1,21 @@
-import React, { FC, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { getAuth } from 'firebase/auth'
+
+import { Paper, Typography, Button, Alert } from '@mui/material'
+
+import { RootState } from '../../../store'
 import {
   sendVerifyEmail,
   setError,
   setSuccess,
   signout
 } from '../../../store/actions/authActions'
-import { RootState } from '../../../store'
-
-import { Paper, Typography, Button } from '@mui/material'
 
 import useStyles from './styles'
-import { getAuth } from '@firebase/auth'
 
-const VerifyEmail: FC = () => {
+const VerifyEmail: React.FC = () => {
   const c = useStyles()
 
   const [loading, setLoading] = useState(false)
@@ -49,6 +50,9 @@ const VerifyEmail: FC = () => {
       <Typography className={c.header} variant="h5" component="h4">
         Аккаунт не подтвержден!
       </Typography>
+
+      {error && <Alert severity="error">{error}</Alert>}
+      {success && <Alert severity="success">{success}</Alert>}
 
       <Typography component="p" sx={{ marginTop: '10px' }}>
         На ваш email: {getAuth().currentUser?.email}, выслано письмо с

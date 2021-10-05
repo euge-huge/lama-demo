@@ -1,4 +1,7 @@
-// AUTH
+// Common
+export const SET_ALERT = 'SET_ALERT'
+
+// Auth
 export const SET_USER = 'SET_USER'
 export const SIGN_OUT = 'SIGN_OUT'
 export const SET_LOADING = 'SET_LOADING'
@@ -6,26 +9,28 @@ export const SET_ERROR = 'SET_ERROR'
 export const NEED_VERIFICATION = 'NEED_VERIFICATION'
 export const SET_SUCCESS = 'SET_SUCCESS'
 
-// REGIONS
-export const CREATE_REGION = 'CREATE_REGION'
+// Regions
 export const SET_REGIONS = 'SET_REGIONS'
+export const SET_REGIONS_LOADING = 'SET_REGIONS_LOADING'
 
-export interface Region {
-  id: string
-  name: string
-  createdAt: any
-  ownerId?: string
+// Cities
+export const SET_CITIES = 'SET_CITIES'
+export const SET_CITIES_LOADING = 'SET_CITIES_LOADING'
+
+// Common
+export interface CommonState {
+  alert: Alert
 }
 
-export interface RegionsState {
-  regions: Region[]
-  loading: boolean
+export interface Alert {
+  isOpen: boolean
+  message: string | null
+  type?: AlertTypes
 }
 
-export interface RegionDataForm {
-  name: string
-}
+export type AlertTypes = 'success' | 'error' | 'warning'
 
+// Auth
 export interface User {
   firstName: string
   lastName: string
@@ -55,8 +60,52 @@ export interface SignInData {
   password: string
 }
 
-// Actions
+// Regions
+export interface Region {
+  id: string
+  name: string
+  createdAt: any
+  ownerId?: string
+}
 
+export interface RegionsState {
+  regions: Region[]
+  loading: boolean
+}
+
+export interface RegionDataForm {
+  name: string
+}
+
+// Cities
+export interface City {
+  id: string
+  name: string
+  regionId: string
+  population: number
+  createdAt: any
+  ownerId?: string
+}
+
+export interface CitiesState {
+  cities: City[]
+  loading: boolean
+}
+
+export interface CitiyDataForm {
+  name: string
+  regionId: string
+  population: number
+}
+
+// Actions
+// Common
+interface SetAlert {
+  type: typeof SET_ALERT
+  payload: Alert
+}
+
+// Auth
 interface SetUserAction {
   type: typeof SET_USER
   payload: User
@@ -85,16 +134,27 @@ interface SetSuccessAction {
   payload: string
 }
 
-// REGIONS
-interface CreateRegionAction {
-  type: typeof CREATE_REGION
-  payload: Region
-}
-
+// Regions
 interface SetRegionsAction {
   type: typeof SET_REGIONS
   payload: Region[]
 }
+interface SetRegionsLoadingAction {
+  type: typeof SET_REGIONS_LOADING
+  payload: boolean
+}
+
+// Cities
+interface SetCitiesAction {
+  type: typeof SET_CITIES
+  payload: City[]
+}
+interface SetCitiesLoadingAction {
+  type: typeof SET_CITIES_LOADING
+  payload: boolean
+}
+
+export type CommonStateAction = SetAlert
 
 export type AuthAction =
   | SetUserAction
@@ -104,4 +164,6 @@ export type AuthAction =
   | NeedVerificationAction
   | SetSuccessAction
 
-export type RegionAction = CreateRegionAction | SetRegionsAction
+export type RegionAction = SetRegionsAction | SetRegionsLoadingAction
+
+export type CitiyAction = SetCitiesAction | SetCitiesLoadingAction

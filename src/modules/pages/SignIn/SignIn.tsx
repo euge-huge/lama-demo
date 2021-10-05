@@ -2,24 +2,32 @@ import React, { FC, useState, FormEvent, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 
+import {
+  Paper,
+  Typography,
+  Box,
+  TextField,
+  Button,
+  Link,
+  Alert
+} from '@mui/material'
+
 import { RootState } from '../../../store'
 import { signin, setError } from '../../../store/actions/authActions'
-
-import { Paper, Typography, Box, TextField, Button, Link } from '@mui/material'
 
 import useStyles from './styles'
 
 const SignIn: FC = () => {
   const c = useStyles()
 
+  const dispatch = useDispatch()
+  const history = useHistory()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const dispatch = useDispatch()
   const { error } = useSelector((state: RootState) => state.auth)
-
-  const history = useHistory()
 
   useEffect(() => {
     return () => {
@@ -31,10 +39,13 @@ const SignIn: FC = () => {
 
   const submitHandler = (e: FormEvent) => {
     e.preventDefault()
+
     if (error) {
       dispatch(setError(''))
     }
+
     setLoading(true)
+
     dispatch(signin({ email, password }, () => setLoading(false)))
   }
 
@@ -43,6 +54,8 @@ const SignIn: FC = () => {
       <Typography className={c.header} variant="h5" component="h4">
         Авторизация
       </Typography>
+
+      {error && <Alert severity="error">{error}</Alert>}
 
       <Box className={c.form} component="form" onSubmit={submitHandler}>
         <TextField

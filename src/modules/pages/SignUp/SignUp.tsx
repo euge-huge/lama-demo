@@ -2,15 +2,26 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
+import {
+  Paper,
+  Typography,
+  Box,
+  TextField,
+  Button,
+  Link,
+  Alert
+} from '@mui/material'
+
 import { RootState } from '../../../store'
 import { signup, setError } from '../../../store/actions/authActions'
-
-import { Paper, Typography, Box, TextField, Button, Link } from '@mui/material'
 
 import useStyles from './styles'
 
 const SignUp: React.FC = () => {
   const c = useStyles()
+
+  const dispatch = useDispatch()
+  const history = useHistory()
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -20,10 +31,7 @@ const SignUp: React.FC = () => {
 
   const [loading, setLoading] = useState(false)
 
-  const dispatch = useDispatch()
   const { error } = useSelector((state: RootState) => state.auth)
-
-  const history = useHistory()
 
   useEffect(() => {
     return () => {
@@ -54,7 +62,7 @@ const SignUp: React.FC = () => {
         Регистрация
       </Typography>
 
-      {error}
+      {error && <Alert severity="error">{error}</Alert>}
 
       <Box className={c.form} component="form" onSubmit={submitHandler}>
         <TextField

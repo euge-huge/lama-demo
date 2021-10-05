@@ -1,17 +1,5 @@
 import { ThunkAction } from 'redux-thunk'
-import {
-  SignUpData,
-  AuthAction,
-  SET_USER,
-  SET_SUCCESS,
-  SET_LOADING,
-  SIGN_OUT,
-  User,
-  SignInData,
-  SET_ERROR,
-  NEED_VERIFICATION
-} from '../types'
-import { RootState } from '..'
+
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -27,7 +15,22 @@ import {
   getDoc
 } from 'firebase/firestore'
 
-// Create user
+import { RootState } from '..'
+import { openAlert } from './commonStoreActions'
+import {
+  User,
+  AuthAction,
+  SignUpData,
+  SignInData,
+  SET_USER,
+  SET_SUCCESS,
+  SET_LOADING,
+  SIGN_OUT,
+  SET_ERROR,
+  NEED_VERIFICATION
+} from '../types'
+
+// Sign up
 export const signup = (
   data: SignUpData,
   onError: () => void
@@ -69,48 +72,12 @@ export const signup = (
     } catch (err: any) {
       onError()
 
-      dispatch({
-        type: SET_ERROR,
-        payload: err.message
-      })
+      dispatch(setError(err.message))
     }
   }
 }
 
-// Get user by id
-export const getUserById = (
-  id: string
-): ThunkAction<void, RootState, null, AuthAction> => {
-  return async (dispatch) => {
-    try {
-      const db = getFirestore()
-      const user = await getDoc(doc(db, 'users', id))
-      if (user.exists()) {
-        const userData = user.data() as User
-        dispatch({
-          type: SET_USER,
-          payload: userData
-        })
-      }
-    } catch (err) {
-      console.log(err)
-    }
-  }
-}
-
-// Set loading
-export const setLoading = (
-  value: boolean
-): ThunkAction<void, RootState, null, AuthAction> => {
-  return (dispatch) => {
-    dispatch({
-      type: SET_LOADING,
-      payload: value
-    })
-  }
-}
-
-// Log in
+// Sign in
 export const signin = (
   data: SignInData,
   onError: () => void
@@ -120,9 +87,8 @@ export const signin = (
       const auth = getAuth()
       await signInWithEmailAndPassword(auth, data.email, data.password)
     } catch (err: any) {
-      console.log(err.message)
       onError()
-      dispatch(setError(err.code))
+      dispatch(setError(err.message))
     }
   }
 }
@@ -137,22 +103,10 @@ export const signout = (): ThunkAction<void, RootState, null, AuthAction> => {
       dispatch({
         type: SIGN_OUT
       })
-    } catch (err) {
-      console.log(err)
+      dispatch(openAlert('Вы вышли из системы', 'warning'))
+    } catch (err: any) {
       dispatch(setLoading(false))
     }
-  }
-}
-
-// Set error
-export const setError = (
-  msg: string
-): ThunkAction<void, RootState, null, AuthAction> => {
-  return (dispatch) => {
-    dispatch({
-      type: SET_ERROR,
-      payload: msg
-    })
   }
 }
 
@@ -170,15 +124,24 @@ export const setNeedVerification = (): ThunkAction<
   }
 }
 
-// Set success
-export const setSuccess = (
-  msg: string
+// Get user by id
+export const getUserById = (
+  id: string
 ): ThunkAction<void, RootState, null, AuthAction> => {
-  return (dispatch) => {
-    dispatch({
-      type: SET_SUCCESS,
-      payload: msg
-    })
+  return async (dispatch) => {
+    try {
+      const db = getFirestore()
+
+      const user = await getDoc(doc(db, 'users', id))
+
+      if (user.exists()) {
+        const userData = user.data() as User
+        dispatch({
+          type: SET_USER,
+          payload: userData
+        })
+      }
+    } catch (err: any) {}
   }
 }
 
@@ -191,9 +154,8 @@ export const sendPassResetEmail = (
     try {
       const auth = getAuth()
       await sendPasswordResetEmail(auth, email)
-      dispatch(setSuccess(successMsg))
+      dispatch(openAlert(successMsg, 'success'))
     } catch (err: any) {
-      console.log(err)
       dispatch(setError(err.message))
     }
   }
@@ -207,12 +169,47 @@ export const sendVerifyEmail = (
     try {
       const auth = getAuth()
       if (auth.currentUser) await sendEmailVerification(auth.currentUser)
-      else dispatch(setError('Нет доступа.'))
+      else dispatch(setError('Нет доступа'))
 
-      dispatch(setSuccess(successMsg))
+      dispatch(openAlert(successMsg, 'success'))
     } catch (err: any) {
-      console.log(err)
       dispatch(setError(err.message))
     }
+  }
+}
+
+// Set loading
+export const setLoading = (
+  value: boolean
+): ThunkAction<void, RootState, null, AuthAction> => {
+  return (dispatch) => {
+    dispatch({
+      type: SET_LOADING,
+      payload: value
+    })
+  }
+}
+
+// Set error
+export const setError = (
+  msg: string
+): ThunkAction<void, RootState, null, AuthAction> => {
+  return (dispatch) => {
+    dispatch({
+      type: SET_ERROR,
+      payload: msg
+    })
+  }
+}
+
+// Set success
+export const setSuccess = (
+  msg: string
+): ThunkAction<void, RootState, null, AuthAction> => {
+  return (dispatch) => {
+    dispatch({
+      type: SET_SUCCESS,
+      payload: msg
+    })
   }
 }

@@ -36,6 +36,7 @@ const authReducer = (state = initialState, action: AuthAction) => {
         ...state,
         user: null,
         authenticated: false,
+        needVerification: false,
         loading: false
       }
     case SET_ERROR:

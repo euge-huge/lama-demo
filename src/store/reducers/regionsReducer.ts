@@ -1,8 +1,8 @@
 import {
-  CREATE_REGION,
   RegionAction,
   RegionsState,
-  SET_REGIONS
+  SET_REGIONS,
+  SET_REGIONS_LOADING
 } from '../types'
 
 const initialState: RegionsState = {
@@ -15,15 +15,16 @@ const regionsReducer = (
   action: RegionAction
 ): RegionsState => {
   switch (action.type) {
-    case CREATE_REGION:
-      return {
-        ...state,
-        regions: state.regions.concat(action.payload)
-      }
     case SET_REGIONS:
       return {
         ...state,
-        regions: action.payload
+        regions: action.payload,
+        loading: false
+      }
+    case SET_REGIONS_LOADING:
+      return {
+        ...state,
+        loading: action.payload
       }
     default: {
       return state

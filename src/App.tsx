@@ -1,8 +1,12 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { BrowserRouter, Switch } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+
+import { CssBaseline } from '@mui/material'
+
+import Routes from './Routes'
 
 import { RootState } from './store'
 
@@ -11,15 +15,11 @@ import {
   setLoading,
   setNeedVerification
 } from './store/actions/authActions'
+import { getAllRegionsForUser } from './store/actions/regionsActions'
+import { getAllCitiessForUser } from './store/actions/citiesActions'
 
-import { AuthLayout, MainLayout } from './modules/layouts'
-import { PrivateRoute, PublicRoute } from './modules/auth'
-import { SignUp, SignIn, ForgotPassword, Regions } from './modules/pages'
-
-import { CssBaseline } from '@mui/material'
-import VerifyEmail from './modules/pages/VerifyEmail'
-import { Spinner } from './modules/common/Spinner/Spinner'
-import Cities from './modules/pages/Cities'
+import { Spinner } from './modules/common/Spinner'
+import { Toaster } from './modules/common/Toaster'
 
 const App: React.FC = () => {
   const dispatch = useDispatch()
@@ -36,6 +36,9 @@ const App: React.FC = () => {
         if (!user.emailVerified) {
           dispatch(setNeedVerification())
         }
+
+        dispatch(getAllCitiessForUser())
+        dispatch(getAllRegionsForUser())
       }
       dispatch(setLoading(false))
     })
@@ -45,6 +48,7 @@ const App: React.FC = () => {
     }
   }, [dispatch])
 
+  // Loading Page
   if (loading) {
     return (
       <div
@@ -56,7 +60,7 @@ const App: React.FC = () => {
           left: '0'
         }}
       >
-        <Spinner />
+        <Spinner size={60} logo={true} />
       </div>
     )
   }
@@ -65,49 +69,9 @@ const App: React.FC = () => {
     <BrowserRouter>
       <CssBaseline />
 
-      <Switch>
-        {/* Auth Routes */}
-        <PublicRoute
-          path="/signup"
-          layout={AuthLayout}
-          component={SignUp}
-          exact
-        />
-        <PublicRoute
-          path="/signin"
-          layout={AuthLayout}
-          component={SignIn}
-          exact
-        />
-        <PublicRoute
-          path="/forgot-password"
-          layout={AuthLayout}
-          component={ForgotPassword}
-          exact
-        />
+      <Toaster />
 
-        <PrivateRoute
-          path="/verify-email"
-          component={VerifyEmail}
-          layout={AuthLayout}
-          exact
-        />
-
-        {/* Main Layout Routes */}
-        <PrivateRoute
-          path="/cities"
-          component={Cities}
-          layout={MainLayout}
-          exact
-        />
-
-        <PrivateRoute
-          path="/regions"
-          component={Regions}
-          layout={MainLayout}
-          exact
-        />
-      </Switch>
+      <Routes />
     </BrowserRouter>
   )
 }

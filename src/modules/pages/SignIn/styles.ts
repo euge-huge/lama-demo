@@ -1,9 +1,14 @@
-import { makeStyles } from '@material-ui/styles'
+import { Theme } from '@mui/material/styles'
+import { makeStyles } from '@mui/styles'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     padding: '15px',
-    width: '450px'
+    width: '450px',
+    height: 'auto',
+    [theme.breakpoints.down('sm')]: {
+      width: 'auto'
+    }
   },
   header: {
     textAlign: 'center'
@@ -19,6 +24,6 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     margin: '5px 0'
   }
-})
+}))
 
 export default useStyles

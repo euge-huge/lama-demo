@@ -1,18 +1,18 @@
-import React, { FC, useState, FormEvent, useEffect } from 'react'
+import React, { useState, FormEvent, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { Paper, Typography, Box, TextField, Button, Alert } from '@mui/material'
+
+import { RootState } from '../../../store'
 import {
   sendPassResetEmail,
   setError,
   setSuccess
 } from '../../../store/actions/authActions'
-import { RootState } from '../../../store'
-
-import { Paper, Typography, Box, TextField, Button } from '@mui/material'
 
 import useStyles from './styles'
 
-const ForgotPassword: FC = () => {
+const ForgotPassword: React.FC = () => {
   const c = useStyles()
 
   const [email, setEmail] = useState('')
@@ -40,7 +40,12 @@ const ForgotPassword: FC = () => {
       dispatch(setError(''))
     }
     setLoading(true)
-    await dispatch(sendPassResetEmail(email, 'Email sent!'))
+    await dispatch(
+      sendPassResetEmail(
+        email,
+        'Сообщение с инструкцией для восстановления пароля отправлено!'
+      )
+    )
     setLoading(false)
   }
 
@@ -50,9 +55,11 @@ const ForgotPassword: FC = () => {
         Восстановление пароля
       </Typography>
 
+      {error && <Alert severity="error">{error}</Alert>}
+      {success && <Alert severity="success">{success}</Alert>}
+
       <Box className={c.form} component="form" onSubmit={submitHandler}>
         <TextField
-          id="email"
           label="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
